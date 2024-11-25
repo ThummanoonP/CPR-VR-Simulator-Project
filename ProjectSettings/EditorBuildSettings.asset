@@ -9,8 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/TitleScene.unity
     guid: 2e8f3d554ddf4984db2e99679eb4fff3
   - enabled: 1
-    path: Assets/Scenes/CPRScene.unity
+    path: Assets/Scenes/CPRScene Old.unity
     guid: 8d014bb2ad82a894aa5fbc5d1f3ed174
+  - enabled: 1
+    path: Assets/Scenes/CPRScene.unity
+    guid: f284df55f82e43847a9317a740d091ae
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 05efe81eaae9f4b43a62a37cf6dfe5d5, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e63429fbbb3f8224390e962922497b9b, type: 2}

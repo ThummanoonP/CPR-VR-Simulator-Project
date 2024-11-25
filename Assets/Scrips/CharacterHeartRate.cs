@@ -35,7 +35,7 @@ public class CharacterHeartRate : MonoBehaviour
     {
         if (CPR.activeSelf) 
         {
-            PumpRate++;
+            //PumpRate++;
             HeartRateUp();
         }
     }
