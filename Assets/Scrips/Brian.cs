@@ -11,18 +11,19 @@ public class Brian : MonoBehaviour
     }
 
     [SerializeField] public GameObject Position;
-    [SerializeField] public GameObject XR;
+    [SerializeField] public GameObject Manager;
     [SerializeField] public GameObject WakeUpCheckBox;
     [SerializeField] public GameObject PulseRateCheckBox;
-    [SerializeField] public GameObject Finish;
+    [SerializeField] private GameObject aEDLocatedUI;
+    [SerializeField] private GameObject aEDSocket;
 
     private Rigidbody[] RagdollRigidbodies;
     private BrianState CurrentState = BrianState.Walking;
     private Animator Animator;
     private CharacterController CharacterController;
-    private InvincibleHand invin = null;
+    private InvincibleHand Invin = null;
     bool Falling = false;
-    bool check = false;
+    bool Check = false;
 
 
     private void Awake()
@@ -30,33 +31,32 @@ public class Brian : MonoBehaviour
         RagdollRigidbodies = GetComponentsInChildren<Rigidbody>();
         Animator = GetComponent<Animator>();
         CharacterController = GetComponent<CharacterController>();
-        invin = XR.GetComponent<InvincibleHand>();
+        Invin = Manager.GetComponent<InvincibleHand>();
 
         CheckBoxOff();
         DisableRagdoll();
         Invoke("ManDown", 9.0f);
-        invin.enabled = false;
+        Invin.enabled = false;
     }
 
-    // Update is called once per frame
-
-
-    private void CheckBoxOff()
+    public void CheckBoxOff()
     {
-        invin.enabled = false;
+        Invin.enabled = false;
         Falling = false;
-        check = false;
+        Check = false;
         WakeUpCheckBox.SetActive(false);
         PulseRateCheckBox.SetActive(false);
     }
 
-    private void CheckBoxOn()
+    public void CheckBoxOn()
     {
         WakeUpCheckBox.SetActive(true);
         PulseRateCheckBox.SetActive(true);
-        invin.enabled = true;
+        aEDLocatedUI.SetActive(true);
+        aEDSocket.SetActive(true);
+        Invin.enabled = true;
         Falling = true;
-        check = true;
+        Check = true;
     }
 
     private void Update()
@@ -84,6 +84,7 @@ public class Brian : MonoBehaviour
         Animator.SetBool("isFall", true);
         Animator.SetBool("isSeizure", true);
         Animator.SetBool("isPassOut", true);
+        
         Invoke("CheckBoxOn", 12.0f);
     }
 
@@ -91,30 +92,16 @@ public class Brian : MonoBehaviour
     {
         Animator.SetBool("isRegain", true);
         Animator.SetBool("isWaking", true);
-        CheckBoxOff();
-        Finish.SetActive(true);
-    }
-
-    private void Fall()
-    {
-        Falling = true;
-        
     }
 
     public bool GetStatus()
     {
-        if (Falling)
-            return (true);
-        else
-            return (false);
+        return Falling;
     }
 
     public bool GetCheck()
     {
-        if (check)
-            return (true);
-        else
-            return (false);
+        return Check;
     }
 
     private void DisableRagdoll()

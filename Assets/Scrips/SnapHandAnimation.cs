@@ -9,9 +9,17 @@ public class SnapHandAnimation : MonoBehaviour
     [SerializeField] private InputActionReference gripActionRef;
     [SerializeField] private GameObject Phone;
     [SerializeField] private GameObject HandMenu;
+    [SerializeField] private GameObject StartUI;
+    [SerializeField] private GameObject Manager;
 
     private static readonly int TriggerAnimation = Animator.StringToHash("Trigger");
     private static readonly int GripAnimation = Animator.StringToHash("Grip");
+    private MissionUI missionUI = null;
+
+    void Awake()
+    {
+        missionUI = Manager.GetComponent<MissionUI>();
+    }
 
     private void OnEnable()
     {
@@ -33,6 +41,7 @@ public class SnapHandAnimation : MonoBehaviour
         else if (this.name == "Right Hand Model")
         {
             HandMenu.SetActive(true);
+            StartUI.SetActive(false);
         }
     } 
 
@@ -47,13 +56,12 @@ public class SnapHandAnimation : MonoBehaviour
         else if (this.name == "Right Hand Model")
         {
             HandMenu.SetActive(false);
+            missionUI.PickUpFirst();
         }
     }
 
 
     private void GripAction_performed(InputAction.CallbackContext obj) => handAnimator.SetFloat(GripAnimation, 1);
- 
-
 
     private void GripAction_canceled(InputAction.CallbackContext obj) => handAnimator.SetFloat(GripAnimation, 0);
 

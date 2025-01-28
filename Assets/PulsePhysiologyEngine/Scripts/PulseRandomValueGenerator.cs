@@ -46,8 +46,9 @@ public class PulseRandomValueGenerator : PulseDataSource
     void Start()
     {
         Heart = Character.GetComponent<CharacterHeartRate>();
-        minValue = Heart.GetHeartRate() - 10.0f;
-        maxValue = Heart.GetHeartRate() + 10.0f;
+        minValue = Heart.GetShowHeartRate() - 10.0f;
+        if (minValue <= 0) minValue = 0;
+        maxValue = Heart.GetShowHeartRate() + 10.0f;
         // Ensure we only generate data if the application is playing
         if (!Application.isPlaying)
         return;
@@ -60,11 +61,11 @@ public class PulseRandomValueGenerator : PulseDataSource
     void Update()
     {
         // Ensure we only generate data if the application is playing
-        if (Heart.GetHeartRate() > 0)
+        if (Heart.GetShowHeartRate() > 0)
         {
-            minValue = Heart.GetHeartRate() - 10.0f;
+            minValue = Heart.GetShowHeartRate() - 10.0f;
             if (minValue <= 0) minValue = 0;
-            maxValue = Heart.GetHeartRate() + 10.0f;
+            maxValue = Heart.GetShowHeartRate() + 10.0f;
             if (!Application.isPlaying)
                 return;
 

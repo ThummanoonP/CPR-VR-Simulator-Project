@@ -8,17 +8,20 @@ public class HapticPulse : MonoBehaviour
     [SerializeField] private GameObject Character;
     [SerializeField] private GameObject LeftHandTouch;
     [SerializeField] private GameObject RightHandTouch;
-
-
+    [SerializeField] private GameObject Manager;
 
     private CharacterHeartRate HeartRate;
-
     bool LeftCheck = false;
     bool RightCheck = false;
     private float duration = 0.0f;
     private float timer = 0.0f;
     private ActionBasedController LeftController = null;
     private ActionBasedController RightController = null;
+    private MissionController Mission = null;
+    void Awake()
+    {
+        Mission = Manager.GetComponent<MissionController>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -27,12 +30,13 @@ public class HapticPulse : MonoBehaviour
         {
             RightHandTouch.SetActive(true);
             RightCheck = true;
-
+            Mission.CheckHapticPulse();
         }
         else if ((other.gameObject.name == "Left Controller") && ( RightCheck == false))
         {
             LeftHandTouch.SetActive(true);
             LeftCheck  = true;
+            Mission.CheckHapticPulse();
         }
 
     }
@@ -57,7 +61,6 @@ public class HapticPulse : MonoBehaviour
         else return false;
     }
 
-
     void Update()
     {
         HeartRate = Character.GetComponent<CharacterHeartRate>();
@@ -67,9 +70,9 @@ public class HapticPulse : MonoBehaviour
 
         if ((RightHandTouch.activeSelf) || (LeftHandTouch.activeSelf)) 
         {
-            if (timer >= (60.0f / HeartRate.GetHeartRate()))
+            if (timer >= (60.0f / HeartRate.GetShowHeartRate()))
             {
-                duration = (HeartRate.GetHeartRate() / 120) * 0.2f;
+                duration = (HeartRate.GetShowHeartRate() / 120) * 0.2f;
 
                 if (RightCheck) RightController.SendHapticImpulse(0.02f, duration);
                 else if (LeftCheck) LeftController.SendHapticImpulse(0.02f, duration);

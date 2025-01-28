@@ -5,78 +5,111 @@ using UnityEngine;
 public class CharacterHeartRate : MonoBehaviour
 {
     [SerializeField] private GameObject CPR;
-    private float HeartRateMax;
-    private float HeartRate;
-    private int PumpRate = 0;
-
-    private float timer = 0.0f;
+    [SerializeField] public GameObject Manager;
+    private float HeartRateMax = 120.0f;
+    private float HeartRateMin = 100.0f;
+    private float realHeartRate = 0.0f;
+    private float totalHeartRate = 0.0f;
+    private float showHeartRate = 0.0f;
+    private float currentRate = 0.0f;
+    private int totalCompressions = 0;
+    private float startTime = 0f; 
+    private bool hasStarted = false;
+    private float elapsedTime = 0.0f;
     private float UpRate = 0.0f;
+    private bool isPump = false;
     private Brian brian = null;
-
-    // Start is called before the first frame update
-    void Start()
+    private CPRCheckBox cPRCheckbox = null;
+    private CPRController cPRController = null;
+    private MissionController Mission = null;
+    
+    void Awake()
     {
-        HeartRateMax = 120.0f;
-        HeartRate = Random.Range(1, 30);
+        showHeartRate = Random.Range(0, 29);
         brian = this.GetComponent<Brian>();
+        cPRCheckbox = Manager.GetComponent<CPRCheckBox>();
+        cPRController = Manager.GetComponent<CPRController>();
+        Mission = Manager.GetComponent<MissionController>();
     }
 
-    public float GetHeartRate()
+    public float GetShowHeartRate()
     {
-        return HeartRate;
+        return showHeartRate;
     }
 
-    public float GetHeartRateMax()
+    public bool HeartRateIsBack()
     {
-        return HeartRateMax;
+        realHeartRate = (totalHeartRate/(cPRController.GetFinishTime()/60));
+        Debug.Log("HeartRate : " +realHeartRate.ToString());
+        if(realHeartRate >= 100)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void HeartRatePumping()
     {
         if (CPR.activeSelf) 
         {
-            //PumpRate++;
-            HeartRateUp();
+            isPump = true;
+            if(cPRCheckbox.GetAEDStatus() == true)
+            {
+                cPRController.PumpStart();
+            }
+            else if(cPRCheckbox.GetAEDStatus() == false)
+            {
+                cPRController.PumpWithOutAED();
+            }
         }
     }
 
-    private void HeartRateDown()
+    private void HeartRateUp(float min, float max)
     {
-        HeartRate -= 0.1f;
-        Debug.Log("Rate Down : " + HeartRate);
-    }
-
-    private void HeartRateUp()
-    {
-        UpRate = Random.Range(0.5f, 1.0f);
-        HeartRate += UpRate;
-        Debug.Log("Rate Up : " + HeartRate);
-    }
-
-    private void RateCheck()
-    {
-       if ((HeartRate > 0) && (HeartRate <= HeartRateMax))
-        {
-            if (PumpRate > 5) HeartRateUp();
-            PumpRate = 0;
-        }
-        else if (HeartRate >= HeartRateMax)
-        {
-            HeartRate = HeartRateMax;
-            PumpRate = 0;
-            brian.Rise();
-        }
+        UpRate = Random.Range(min, max);
+        totalHeartRate += UpRate;
+        //Debug.Log("Rate Up : " +totalHeartRate.ToString());
     }
 
     void Update()
     {
-        timer += Time.deltaTime;
-
-        if (timer >= 3.0f)
+        showHeartRate = Random.Range(0, 29);
+        if (isPump == true)
         {
-            RateCheck();
-            timer = 0.0f;
+            if(cPRController.GetIsFirstPump() == true)
+            {
+                hasStarted = false;
+                totalCompressions = 0;
+            }
+
+            if(!hasStarted)
+            {
+                hasStarted = true;
+                startTime = Time.time; 
+            }
+
+            totalCompressions++;
+            elapsedTime = Time.time - startTime;
+            currentRate = totalCompressions / (elapsedTime / 60f);
+
+            if (currentRate >= HeartRateMin && currentRate <= HeartRateMax)
+            {
+                showHeartRate = Random.Range(70, 110);
+                HeartRateUp(5.0f,10.0f);
+                Mission.Hit( true);
+            }
+            else
+            {
+                showHeartRate = Random.Range(30, 60);
+                HeartRateUp(1.0f,3.0f);
+                Mission.Hit(false);
+            }
+            isPump = false;
         }
+     
     }
 
 }

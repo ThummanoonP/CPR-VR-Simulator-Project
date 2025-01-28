@@ -22,7 +22,6 @@ public class PopUpUI : MonoBehaviour
             L_count = 1;
         }
         PopUp();
-
     }
 
     private void PopUp()
@@ -32,5 +31,4 @@ public class PopUpUI : MonoBehaviour
         else if ((L_count == 1) && (R_count == 1)) HeartBeatChart.SetActive(true);
         else HeartBeatChart.SetActive(false);
     }
-
 }

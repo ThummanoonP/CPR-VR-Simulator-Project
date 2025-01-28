@@ -7,27 +7,34 @@ public class WakeUp : MonoBehaviour
     [SerializeField] private GameObject RightHand;
     [SerializeField] private GameObject LeftHandWakeUp;
     [SerializeField] private GameObject RightHandWakeUp;
-    [SerializeField] private GameObject CPRCheckBox;
+    [SerializeField] private GameObject Manager;
 
     private float timer = 0.0f;
     bool LeftCheck = false;
     bool RightCheck = false;
     private ActionBasedController LeftController = null;
     private ActionBasedController RightController = null;
+    private MissionController Mission = null;
+
+    void Awake()
+    {
+        Mission = Manager.GetComponent<MissionController>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
 
-        if ((other.gameObject.name == "Right Controller") && (LeftCheck == false) && (CPRCheckBox.activeSelf == false))
+        if ((other.gameObject.name == "Right Controller") && (LeftCheck == false))
         {
             RightHandWakeUp.SetActive(true);
             RightCheck = true;
-
+            Mission.CheakWakeUp();
         }
-        else if ((other.gameObject.name == "Left Controller") && (RightCheck == false) && (CPRCheckBox.activeSelf == false))
+        else if ((other.gameObject.name == "Left Controller") && (RightCheck == false))
         {
             LeftHandWakeUp.SetActive(true);
             LeftCheck = true;
+            Mission.CheakWakeUp();
         }
 
     }

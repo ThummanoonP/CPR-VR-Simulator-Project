@@ -4,7 +4,26 @@ using UnityEngine;
 
 public class Alert : MonoBehaviour
 {
-    bool GoAway = false;
+    private bool GoAway = false;
+    private bool CPRActive = false;
+    private bool clearArea = false;
+
+    public void SetClearArea() 
+    {
+        clearArea = true;
+    }
+    public bool GetClear()
+    {
+        return clearArea;
+    }
+    public void SetCPRActive() 
+    {
+        CPRActive = true;
+    }
+    public bool GetCPRActive()
+    {
+        return CPRActive;
+    }
 
     public void SetGoAwayTrue() 
     {

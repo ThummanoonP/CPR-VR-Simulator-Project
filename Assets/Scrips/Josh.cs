@@ -7,12 +7,14 @@ public class Josh : MonoBehaviour
     {
         Walking,
         Standing,
+        StandOut,
         Ragdoll
     }
 
     [SerializeField] public GameObject AlertTarget;
     [SerializeField] public GameObject AroundPoint;
     [SerializeField] public GameObject ManDownPoint;
+    [SerializeField] private GameObject Manager;
 
     private Rigidbody[] RagdollRigidbodies;
     private JoshState CurrentState = JoshState.Walking;
@@ -25,9 +27,11 @@ public class Josh : MonoBehaviour
     bool check = false;
     int step = 0;
     int ChildNumber = 0;
+    private MissionController Mission = null;
 
     void Awake()
     {
+        Mission = Manager.GetComponent<MissionController>();
         RagdollRigidbodies = GetComponentsInChildren<Rigidbody>();
         brian = ManDownPoint.GetComponent<Brian>();
         Animator = GetComponent<Animator>();
@@ -53,6 +57,12 @@ public class Josh : MonoBehaviour
                 Stopping();
                 Stay();
                 break;
+            case JoshState.StandOut:
+                RagdollBehaviour();
+                Stopping();
+                Stay();
+                Turning();
+                break;
             case JoshState.Ragdoll:
                 RagdollBehaviour();
                 break;
@@ -72,10 +82,20 @@ public class Josh : MonoBehaviour
         }
         else if(alert.GetAlert() == true && step == 3)
         {
-            Turning();
-            AroundPointSet();
-            CurrentState = JoshState.Walking;
-            step = 4;
+            if(alert.GetCPRActive() == false)
+            {
+                Turning();
+                AroundPointSet();
+                CurrentState = JoshState.Walking;
+                step = 4;
+            }
+        }
+        else if(alert.GetClear() == true && step == 3)
+        {
+                Turning();
+                AroundPointSet();
+                CurrentState = JoshState.Walking;
+                step = 4;
         }
     }
 
@@ -89,16 +109,25 @@ public class Josh : MonoBehaviour
         }
         else if (other.gameObject.name == "Right Controller" && step == 3)
         {
+            Mission.ClearArea();
             alert.SetGoAwayTrue();
+            alert.SetClearArea();
         }
         else if (other.gameObject.name == "Left Controller" && step == 3)
         {
+            Mission.ClearArea();
             alert.SetGoAwayTrue();
+            alert.SetClearArea();
         }
-        if (other.gameObject.name == Position.gameObject.name && step == 4)
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == "Stand Out Area" && step == 4)
         {
             alert.SetGoAwayFalse();
-            CurrentState = JoshState.Standing;
+            CurrentState = JoshState.StandOut;
+            step = 5;
         }
     }
 
