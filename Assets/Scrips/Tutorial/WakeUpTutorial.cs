@@ -1,26 +1,31 @@
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class WakeUp : MonoBehaviour
+public class WakeUpTutorial : MonoBehaviour
 {
     [SerializeField] private GameObject LeftHand;
     [SerializeField] private GameObject RightHand;
     [SerializeField] private GameObject LeftHandWakeUp;
     [SerializeField] private GameObject RightHandWakeUp;
     [SerializeField] private GameObject Manager;
+    [SerializeField] private GameObject WakeNoti;
     [SerializeField] private GameObject Brian;
 
     private float timer = 0.0f;
     bool LeftCheck = false;
     bool RightCheck = false;
+    private SkinnedMeshRenderer MeshRendererLeft = null;
+    private SkinnedMeshRenderer MeshRendererRight = null;
     private ActionBasedController LeftController = null;
     private ActionBasedController RightController = null;
-    private MissionController Mission = null;
+    private MissionControllerTutorial Mission = null;
     private AudioSource WakeUpSound = null;
 
     void Awake()
     {
-        Mission = Manager.GetComponent<MissionController>();
+        MeshRendererRight = RightHand.GetComponentInChildren<SkinnedMeshRenderer>();
+        MeshRendererLeft = LeftHand.GetComponentInChildren<SkinnedMeshRenderer>();
+        Mission = Manager.GetComponent<MissionControllerTutorial>();
         WakeUpSound = Brian.GetComponent<AudioSource>();
     }
 
@@ -32,12 +37,16 @@ public class WakeUp : MonoBehaviour
             RightHandWakeUp.SetActive(true);
             RightCheck = true;
             Mission.CheakWakeUp();
+            WakeNoti.SetActive(false);
+            WakeUpSound.Play(); 
         }
         else if ((other.gameObject.name == "Left Controller") && (RightCheck == false))
         {
             LeftHandWakeUp.SetActive(true);
             LeftCheck = true;
             Mission.CheakWakeUp();
+            WakeNoti.SetActive(false);
+            WakeUpSound.Play();
         }
 
     }
@@ -62,6 +71,15 @@ public class WakeUp : MonoBehaviour
     {
         if ((LeftCheck == false) && (RightCheck == false)) return true;
         else return false;
+    }
+    
+    public void Reset()
+    {
+        LeftCheck = false;
+        RightCheck = false;
+        WakeUpSound.Stop();
+        MeshRendererRight.enabled = true;
+        MeshRendererLeft.enabled = true;
     }
 
     void Update()

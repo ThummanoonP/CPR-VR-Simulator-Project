@@ -13,15 +13,20 @@ public class ButtonScrip : MonoBehaviour
 
     public void QuitProgram()
     {
-        if (EditorApplication.isPlaying)
+        #if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isPlaying)
         {
             UnityEditor.EditorApplication.ExitPlaymode();
         }
-        else
+        #else
         Application.Quit();
+        #endif
 
     }
-
+    public void TutorialMode()
+    {
+        SceneManager.LoadScene("TutorialScene", LoadSceneMode.Single);
+    }
     public void TitleMenu()
     {
         SceneManager.LoadScene("TitleScene", LoadSceneMode.Single);

@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class Josh : MonoBehaviour
+public class JoshTutorial : MonoBehaviour
 {
     private enum JoshState
     {
@@ -15,39 +15,35 @@ public class Josh : MonoBehaviour
     [SerializeField] public GameObject AroundPoint;
     [SerializeField] public GameObject ManDownPoint;
     [SerializeField] private GameObject Manager;
+    [SerializeField] private GameObject Noti;
+    [SerializeField] private GameObject NotiPickupPhone;
 
     private Rigidbody[] RagdollRigidbodies;
     private JoshState CurrentState = JoshState.Walking;
     private Animator Animator;
     private CharacterController CharacterController;
     private GameObject Position = null;
-    private Brian brian = null;
-    private Alert alert;
-    bool fall = false;
-    bool check = false;
+    private AlertTutorial alert;
     int step = 0;
     int ChildNumber = 0;
-    private MissionController Mission = null;
+    private MissionControllerTutorial Mission = null;
     private AudioSource heySound = null;
 
     void Awake()
     {
-        Mission = Manager.GetComponent<MissionController>();
         RagdollRigidbodies = GetComponentsInChildren<Rigidbody>();
-        brian = ManDownPoint.GetComponent<Brian>();
         Animator = GetComponent<Animator>();
         CharacterController = GetComponent<CharacterController>();
-        alert = AlertTarget.GetComponent<Alert>();
+        alert = AlertTarget.GetComponent<AlertTutorial>();
+        Mission = Manager.GetComponent<MissionControllerTutorial>();
         heySound = Manager.GetComponent<AudioSource>();
-        AroundPointSet();
+        Encircle();
         DisableRagdoll();
     }
 
     // Update is called once per frame
     void Update()
     {
-        fall = brian.GetStatus();
-        check = brian.GetCheck();
         switch (CurrentState)
         {
             case JoshState.Walking:
@@ -70,73 +66,53 @@ public class Josh : MonoBehaviour
                 break;
         }
 
-        if (fall == true && step == 0)
-        {
-            CurrentState = JoshState.Standing;
-            step = 1;
-        }
-        else if (check == true && step == 1)
-        {
-            Turning();
-            Encircle();
-            CurrentState = JoshState.Walking;
-            step = 2;
-        }
-        else if(alert.GetAlert() == true && step == 3)
-        {
-            if(alert.GetCPRActive() == false)
-            {
-                Turning();
-                AroundPointSet();
-                CurrentState = JoshState.Walking;
-                step = 4;
-            }
-        }
-        else if(alert.GetClear() == true && step == 3)
+        if(alert.GetAlert() == true && step == 1)
         {
             Turning();
             AroundPointSet();
             CurrentState = JoshState.Walking;
-            step = 4;
+            step = 2;
+            Noti.SetActive(false);
+        }
+        
+        if(((alert.GetAmOut() == true) && (step == 3)) && (alert.GetCount() <=1))
+        { 
+            NotiPickupPhone.SetActive(true);
         }
     }
 
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Restricted Area" && step == 2)
+        if (other.gameObject.name == "Restricted Area" && step == 0)
         {
             CurrentState = JoshState.Standing;
-            step = 3;
+            step = 1;
+            Noti.SetActive(true);
         }
-        else if (other.gameObject.name == "Right Controller" && step == 3)
+        else if (other.gameObject.name == "Right Controller" && step == 1)
         {
-            if(alert.GetCPRActive() == false)
-            {
-                Mission.ClearArea();
-                alert.SetGoAwayTrue();
-                alert.SetClearArea();
-                heySound.Play(); 
-            }
+            Mission.ClearArea();
+            alert.SetGoAwayTrue();
+            alert.SetClearArea(); 
+            heySound.Play(); 
         }
-        else if (other.gameObject.name == "Left Controller" && step == 3)
-        {   if(alert.GetCPRActive() == false)
-            {
-                Mission.ClearArea();
-                alert.SetGoAwayTrue();
-                alert.SetClearArea();
-                heySound.Play();
-            }
+        else if (other.gameObject.name == "Left Controller" && step == 1)
+        {
+            Mission.ClearArea();
+            alert.SetGoAwayTrue();
+            alert.SetClearArea();
+            heySound.Play();
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.name == "Stand Out Area" && step == 4)
+        if (other.gameObject.name == "Stand Out Area" && step == 2)
         {
-            alert.SetGoAwayFalse();
             CurrentState = JoshState.StandOut;
-            step = 5;
+            alert.SetAmOutTrue();
+            step = 3;
         }
     }
 

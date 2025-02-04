@@ -12,6 +12,7 @@ public class PulseRandomValueGenerator : PulseDataSource
     [SerializeField] private GameObject Character;
 
     private CharacterHeartRate Heart;
+    private CharacterHeartRateTutorial HeartT;
 
     private float minValue;      // Minimum value
     private float maxValue;    // Maximum value
@@ -46,12 +47,28 @@ public class PulseRandomValueGenerator : PulseDataSource
     void Start()
     {
         Heart = Character.GetComponent<CharacterHeartRate>();
-        minValue = Heart.GetShowHeartRate() - 10.0f;
-        if (minValue <= 0) minValue = 0;
-        maxValue = Heart.GetShowHeartRate() + 10.0f;
-        // Ensure we only generate data if the application is playing
-        if (!Application.isPlaying)
-        return;
+        HeartT = Character.GetComponent<CharacterHeartRateTutorial>();
+
+        if (Heart != null)
+        {
+            minValue = Heart.GetShowHeartRate() - 10.0f;
+            if (minValue <= 0) minValue = 0;
+            maxValue = Heart.GetShowHeartRate() + 10.0f;
+            // Ensure we only generate data if the application is playing
+            if (!Application.isPlaying)
+            return;
+        }
+        else if (HeartT != null)
+        {
+            minValue = HeartT.GetShowHeartRate() - 10.0f;
+            if (minValue <= 0) minValue = 0;
+            maxValue = HeartT.GetShowHeartRate() + 10.0f;
+            // Ensure we only generate data if the application is playing
+            if (!Application.isPlaying)
+                return;
+        }
+        
+        
 
         // Compute initial random value
         previousValue = Random.Range(minValue, maxValue);
@@ -61,56 +78,114 @@ public class PulseRandomValueGenerator : PulseDataSource
     void Update()
     {
         // Ensure we only generate data if the application is playing
-        if (Heart.GetShowHeartRate() > 0)
+        if (Heart != null)
         {
-            minValue = Heart.GetShowHeartRate() - 10.0f;
-            if (minValue <= 0) minValue = 0;
-            maxValue = Heart.GetShowHeartRate() + 10.0f;
-            if (!Application.isPlaying)
-                return;
+            if (Heart.GetShowHeartRate() > 0)
+            {
+                minValue = Heart.GetShowHeartRate() - 10.0f;
+                if (minValue <= 0) minValue = 0;
+                maxValue = Heart.GetShowHeartRate() + 10.0f;
+                if (!Application.isPlaying)
+                    return;
 
-            previousValue = Random.Range(minValue, maxValue);
-            // Clear PulseData container
-            data.timeStampList.Clear();
-            data.valuesTable[0].Clear();
+                previousValue = Random.Range(minValue, maxValue);
+                // Clear PulseData container
+                data.timeStampList.Clear();
+                data.valuesTable[0].Clear();
 
-            // Only generate data at a certain frequency
-            var time = Time.time;
-            if (frequency > 0 && time < previousTime + 1 / frequency)
-                return;
+                // Only generate data at a certain frequency
+                var time = Time.time;
+                if (frequency > 0 && time < previousTime + 1 / frequency)
+                    return;
 
-            // Update time and compute data value
-            previousTime = time;
-            previousValue = GenerateRandomValue();
+                // Update time and compute data value
+                previousTime = time;
+                previousValue = GenerateRandomValue();
 
-            // Broadcast data
-            data.timeStampList.Add(previousTime);
-            data.valuesTable[0].Add(previousValue);
+                // Broadcast data
+                data.timeStampList.Add(previousTime);
+                data.valuesTable[0].Add(previousValue);
+            }
+            else {
+                minValue = 0;
+                maxValue = 0;
+                if (!Application.isPlaying)
+                    return;
+
+                previousValue = Random.Range(minValue, maxValue);
+                // Clear PulseData container
+                data.timeStampList.Clear();
+                data.valuesTable[0].Clear();
+
+                // Only generate data at a certain frequency
+                var time = Time.time;
+                if (frequency > 0 && time < previousTime + 1 / frequency)
+                    return;
+
+                // Update time and compute data value
+                previousTime = time;
+                previousValue = GenerateRandomValue();
+
+                // Broadcast data
+                data.timeStampList.Add(previousTime);
+                data.valuesTable[0].Add(previousValue);
+            }
         }
-        else {
-            minValue = 0;
-            maxValue = 0;
-            if (!Application.isPlaying)
-                return;
+        else if (HeartT != null)
+        {
+            if (HeartT.GetShowHeartRate() > 0)
+            {
+                minValue = HeartT.GetShowHeartRate() - 10.0f;
+                if (minValue <= 0) minValue = 0;
+                maxValue = HeartT.GetShowHeartRate() + 10.0f;
+                if (!Application.isPlaying)
+                    return;
 
-            previousValue = Random.Range(minValue, maxValue);
-            // Clear PulseData container
-            data.timeStampList.Clear();
-            data.valuesTable[0].Clear();
+                previousValue = Random.Range(minValue, maxValue);
+                // Clear PulseData container
+                data.timeStampList.Clear();
+                data.valuesTable[0].Clear();
 
-            // Only generate data at a certain frequency
-            var time = Time.time;
-            if (frequency > 0 && time < previousTime + 1 / frequency)
-                return;
+                // Only generate data at a certain frequency
+                var time = Time.time;
+                if (frequency > 0 && time < previousTime + 1 / frequency)
+                    return;
 
-            // Update time and compute data value
-            previousTime = time;
-            previousValue = GenerateRandomValue();
+                // Update time and compute data value
+                previousTime = time;
+                previousValue = GenerateRandomValue();
 
-            // Broadcast data
-            data.timeStampList.Add(previousTime);
-            data.valuesTable[0].Add(previousValue);
+                // Broadcast data
+                data.timeStampList.Add(previousTime);
+                data.valuesTable[0].Add(previousValue);
+            }
+            else {
+                minValue = 0;
+                maxValue = 0;
+                if (!Application.isPlaying)
+                    return;
+
+                previousValue = Random.Range(minValue, maxValue);
+                // Clear PulseData container
+                data.timeStampList.Clear();
+                data.valuesTable[0].Clear();
+
+                // Only generate data at a certain frequency
+                var time = Time.time;
+                if (frequency > 0 && time < previousTime + 1 / frequency)
+                    return;
+
+                // Update time and compute data value
+                previousTime = time;
+                previousValue = GenerateRandomValue();
+
+                // Broadcast data
+                data.timeStampList.Add(previousTime);
+                data.valuesTable[0].Add(previousValue);
+            }
         }
+
+        
         
     }
 
