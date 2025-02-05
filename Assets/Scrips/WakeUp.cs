@@ -32,12 +32,14 @@ public class WakeUp : MonoBehaviour
             RightHandWakeUp.SetActive(true);
             RightCheck = true;
             Mission.CheakWakeUp();
+            WakeUpSound.Play();
         }
         else if ((other.gameObject.name == "Left Controller") && (RightCheck == false))
         {
             LeftHandWakeUp.SetActive(true);
             LeftCheck = true;
             Mission.CheakWakeUp();
+            WakeUpSound.Play();
         }
 
     }
