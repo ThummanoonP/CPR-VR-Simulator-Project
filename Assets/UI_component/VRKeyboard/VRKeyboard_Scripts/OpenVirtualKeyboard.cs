@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.SceneManagement;
 
 public class OpenVirtualKeyboard : MonoBehaviour
 {
@@ -23,7 +27,7 @@ public class OpenVirtualKeyboard : MonoBehaviour
         else
         {
             #if (UNITY_EDITOR)
-                print("Get the {virtual keyboard} prefabs");
+               print("Get the {virtual keyboard} prefabs");
             #endif
                 keyboardBackground = virtualKeyboard.transform.Find("Background").gameObject.GetComponent<RectTransform>();
         }

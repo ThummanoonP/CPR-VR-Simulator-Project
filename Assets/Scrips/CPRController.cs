@@ -18,13 +18,14 @@ public class CPRController : MonoBehaviour
     private bool isFirstPump = true;
     private float aEDChargerTime = 30.0F;
     private float aEDChargerCounter = 0;
-    private float pumpTime = 120.0F;
+    private float pumpTime = 60.0F;
     private float TotalPumpTime = 360.0F;
     private float pumpCounter = 0;
     private float finishTime = 0;
     private bool aEDButtonStatus = false;
     private bool cPRCheckboxStatus = true;
     private bool finish = false;
+    private bool wait = false;
     private int minutes = 0;
     private int seconds = 0;
     private MissionController Mission = null;
@@ -42,6 +43,15 @@ public class CPRController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(wait == true)
+        {
+            isPump = false;
+            cPRCheckboxStatus = false;
+            CPRText.SetActive(false);
+            timeCountDown.SetActive(false);
+            timeCountDownUI.SetActive(false);
+            isFirstPump = true;
+        }
         if(GetIsPump() == true)
         {
             if(pumpCounter > 0)
@@ -53,6 +63,7 @@ public class CPRController : MonoBehaviour
             }
             else if(pumpCounter <= 0)
             {
+                wait = true;
                 isPump = false;
                 isFirstPump = true;
                 cPRCheckboxStatus = false;
@@ -112,15 +123,22 @@ public class CPRController : MonoBehaviour
         
         if ((finishTime >= TotalPumpTime) && (finish == false))
         {
+            isPump = false;
+            isPumpWithOutAED = false;
+            aEDCharge = false;
             pushUI.SetActive(false);
             finish = true;
             aEDButtonStatus = false;
             Mission.IsFinish();
+            cPRCheckboxStatus = false;
+            timeCountDownUI.SetActive(false);
+            wait = true;
         }
  
     }
     public void OpenAED()
     {
+        wait = false;
         timeCountDownUI.SetActive(true);
         Mission.AEDCharge();
         pushUI.SetActive(false);

@@ -67,11 +67,12 @@ public class CharacterHeartRate : MonoBehaviour
         }
     }
 
-    private void HeartRateUp(float min, float max)
+    private void HeartRateUp(int min, int max)
     {
-        UpRate = Random.Range(min, max);
+        UpRate = ((Random.Range(min, max)) * 0.1f);
+        Debug.Log("Up : " +UpRate);
         totalHeartRate += UpRate;
-        //Debug.Log("Rate Up : " +totalHeartRate.ToString());
+        Debug.Log("Rate : " +totalHeartRate);
     }
 
     void Update()
@@ -98,13 +99,13 @@ public class CharacterHeartRate : MonoBehaviour
             if (currentRate >= HeartRateMin && currentRate <= HeartRateMax)
             {
                 showHeartRate = Random.Range(70, 110);
-                HeartRateUp(5.0f,10.0f);
-                Mission.Hit( true);
+                HeartRateUp(30,50);
+                Mission.Hit(true);
             }
             else
             {
                 showHeartRate = Random.Range(30, 60);
-                HeartRateUp(1.0f,3.0f);
+                HeartRateUp(1,10);
                 Mission.Hit(false);
             }
             isPump = false;

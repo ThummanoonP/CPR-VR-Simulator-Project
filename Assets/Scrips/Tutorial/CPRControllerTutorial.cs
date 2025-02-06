@@ -13,10 +13,12 @@ public class CPRControllerTutorial : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timeCounter;
     [SerializeField] private GameObject aED;
     [SerializeField] private GameObject aEDNoti;
+    [SerializeField] private GameObject aEDNotiDoNot;
+    [SerializeField] private GameObject aEDNotiPush;
     private bool aEDCharge = false;
     private bool isPump = false;
-    private bool isPumpWithOutAED = false;
     private bool isFirstPump = true;
+    private bool isFirstChage = true;
     private float aEDChargerTime = 30.0F;
     private float aEDChargerCounter = 0;
     private float pumpTime = 120.0F;
@@ -26,6 +28,7 @@ public class CPRControllerTutorial : MonoBehaviour
     private bool aEDButtonStatus = false;
     private bool cPRCheckboxStatus = true;
     private bool finish = false;
+    private bool wait = false;
     private int minutes = 0;
     private int seconds = 0;
     private MissionControllerTutorial Mission = null;
@@ -42,7 +45,16 @@ public class CPRControllerTutorial : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {   
+        if(wait == true)
+        {
+            isPump = false;
+            cPRCheckboxStatus = false;
+            CPRText.SetActive(false);
+            timeCountDown.SetActive(false);
+            timeCountDownUI.SetActive(false);
+            isFirstPump = true;
+        }
         if(GetIsPump() == true)
         {
             if(pumpCounter > 0)
@@ -54,6 +66,7 @@ public class CPRControllerTutorial : MonoBehaviour
             }
             else if(pumpCounter <= 0)
             {
+                wait = true;
                 isPump = false;
                 isFirstPump = true;
                 cPRCheckboxStatus = false;
@@ -65,6 +78,11 @@ public class CPRControllerTutorial : MonoBehaviour
                 minutes = 0;
                 seconds = 0;
                 finishTime /= 1;
+                if(isFirstChage == true)
+                {
+                    aEDNoti.SetActive(true);
+                    isFirstChage = false;
+                }
             }
         }
         else if(GetAEDCharge() == true)
@@ -93,16 +111,24 @@ public class CPRControllerTutorial : MonoBehaviour
         
         if ((finishTime >= TotalPumpTime) && (finish == false))
         {
+            wait = true;
+            isPump = false;
+            aEDCharge = false;
             pushUI.SetActive(false);
             finish = true;
             aEDButtonStatus = false;
             Mission.IsFinish();
+            cPRCheckboxStatus = false;
+            timeCountDownUI.SetActive(false);
         }
  
     }
     public void OpenAED()
-    {
+    {   
+        wait = false;
         aEDNoti.SetActive(true);
+        aEDNotiDoNot.SetActive(true);
+        aEDNotiPush.SetActive(false);
         timeCountDownUI.SetActive(true);
         Mission.AEDCharge();
         pushUI.SetActive(false);
@@ -143,10 +169,6 @@ public class CPRControllerTutorial : MonoBehaviour
     public bool GetIsPump()
     {
         return isPump;
-    }
-    public bool GetIsPumpWithOutAED()
-    {
-        return isPumpWithOutAED;
     }
     public bool GetIsFirstPump()
     {
